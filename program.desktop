@@ -1,0 +1,12 @@
+# This is a sample desktop entry
+# The <$EXECUTABLE> and <$ICON> variables must be replaced with the
+# paths to the executable and icon by the installer.
+
+[Desktop Entry]
+Type=Application
+Name=My Sample Program
+Comment=A Sample Program to be installed
+Exec=<$EXECUTABLE> %F
+Icon=<$ICON>
+Terminal=true
+
