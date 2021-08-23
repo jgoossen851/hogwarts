@@ -2,6 +2,21 @@
 
 # ToDo: Add flags (-g, -u, etc.) to enable skipping the interactive part
 
+echo -e "\033[33m"
+echo "ToDo:  Add my program as the default application"
+echo "Global: in /usr/share/applications/defaults.list"
+echo "Local:  in $HOME/.local/share/applications/defaults.list"
+echo "* Append the line "
+echo "      application/custom-program-file-mime-type=program.desktop"
+echo "  under the heading [Default Applications], or create the file."
+echo "* If creating the file, make sure to print the heading."
+echo "* Find a way to somehow add the default under the specified heading,"
+echo "  even if other headings exist in the file."
+echo "* When uninstalling, remove the line from the file (DON''T DELETE!)"
+echo "* You can delete the file if it was the only entry, but you can keep it too..."
+echo -e "\033[0m"
+
+
 # Name resources
 EXECUTABLE_FILE="a.out"
 DESKTOP_FILE="program.desktop"
