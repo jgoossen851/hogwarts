@@ -6,7 +6,7 @@
 Type=Application
 Name=N.E.W.T.
 Comment=A test program for the wizard
-Exec=<$EXECUTABLE> %F
+Exec=<$EXECUTABLE> %f
 Icon=<$ICON>
 Terminal=true
 MimeType=text/custom-type-1;text/custom-type-2
