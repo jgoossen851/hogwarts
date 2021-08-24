@@ -9,4 +9,4 @@ Comment=A Sample Program to be installed
 Exec=<$EXECUTABLE> %F
 Icon=<$ICON>
 Terminal=true
-
+MimeType=application/custom-program-file-mime-type

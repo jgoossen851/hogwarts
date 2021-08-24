@@ -2,20 +2,6 @@
 
 # ToDo: Add flags (-g, -u, etc.) to enable skipping the interactive part
 
-echo -e "\033[33m"
-echo "ToDo:  Add my program as the default application"
-echo "Global: in /usr/share/applications/defaults.list"
-echo "Local:  in $HOME/.local/share/applications/defaults.list"
-echo "* Append the line "
-echo "      application/custom-program-file-mime-type=program.desktop"
-echo "  under the heading [Default Applications], or create the file."
-echo "* If creating the file, make sure to print the heading."
-echo "* Find a way to somehow add the default under the specified heading,"
-echo "  even if other headings exist in the file."
-echo "* When uninstalling, remove the line from the file (DON''T DELETE!)"
-echo "* You can delete the file if it was the only entry, but you can keep it too..."
-echo -e "\033[0m"
-
 
 # Name resources
 EXECUTABLE_FILE="a.out"
@@ -100,6 +86,11 @@ if [ $INSTALL_MODE -eq 1 ]; then
   $DO mkdir -p "$MIME_TYPE_PATH"
   $DO mkdir -p "$ICON_PATH"
   $DO mkdir -p "$PROG_ICON_PATH"
+  
+  # Creat a Default Applications file if it does not exist
+  if [ ! -f $DESKTOP_PATH/defaults.list ]; then    
+    $DO echo "[Default Applications]" > $DESKTOP_PATH/defaults.list
+  fi
 fi
 
 # Edit files
@@ -115,23 +106,30 @@ if [ $INSTALL_MODE -eq 1 ]; then
   $DO cp "$DESKTOP_FILE" "$DESKTOP_PATH"
   $DO cp "$MIME_TYPE_FILE" "$MIME_TYPE_PATH"
   $DO cp "$ICON_FILE" "$ICON_PATH/$ICON_RESOURCE"
+  
+  # Append default application for extension
+  echo "$MIME_TYPE/$MIME_TYPE_NAME=$DESKTOP_FILE" | \
+	$DO tee -a $DESKTOP_PATH/defaults.list > /dev/null
 else
   $DO rm "$BIN_DIR/$EXECUTABLE_FILE"
   $DO rm "$PROG_ICON_PATH/$PROG_ICON_FILE"
   $DO rm "$DESKTOP_PATH/$DESKTOP_FILE"
   $DO rm "$MIME_TYPE_PATH/$MIME_TYPE_FILE"
   $DO rm "$ICON_PATH/$ICON_RESOURCE"
+  
+  # Remove default application for extension
+  $DO sed -i "\|^$MIME_TYPE/$MIME_TYPE_NAME=$DESKTOP_FILE|d" $DESKTOP_PATH/defaults.list
 fi
 
 # Restore backups
 mv "$DESKTOP_FILE.backup" "$DESKTOP_FILE"
 
 # Update resources
-echo -n "Updating MIME database ... "
+echo -n "Updating MIME database... "
 $DO update-mime-database "$SHARE_DIR/mime"
 echo "Done."
 
-echo -n "Updating icon cache ... "
+echo -n "Updating icon cache... "
 $DO update-icon-caches "$SHARE_DIR"/icons/*
 echo "Done."
 
