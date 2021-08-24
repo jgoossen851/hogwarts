@@ -7,8 +7,8 @@
 EXECUTABLE_FILE="a.out"
 DESKTOP_FILE="program.desktop"
 MIME_TYPE_FILE="sample-program-mime-type.xml"
-ICON_FILE="my_custom_icon.svg"
-PROG_ICON_FILE="my_program_icon.svg"
+ICON_FILE="icon_file_1.svg"
+PROG_ICON_FILE="icon_executable.svg"
 
 # Variables in other files ($DESKTOP_FILE)
 EXEC_PLACEHOLDER='<$EXECUTABLE>'
@@ -101,11 +101,11 @@ sed -i.backup \
 
 # Copy or remove files
 if [ $INSTALL_MODE -eq 1 ]; then
-  $DO cp "$EXECUTABLE_FILE" "$BIN_DIR"
-  $DO cp "$PROG_ICON_FILE" "$PROG_ICON_PATH"
+  $DO cp "src/$EXECUTABLE_FILE" "$BIN_DIR"
+  $DO cp "res/$PROG_ICON_FILE" "$PROG_ICON_PATH"
   $DO cp "$DESKTOP_FILE" "$DESKTOP_PATH"
   $DO cp "$MIME_TYPE_FILE" "$MIME_TYPE_PATH"
-  $DO cp "$ICON_FILE" "$ICON_PATH/$ICON_RESOURCE"
+  $DO cp "res/$ICON_FILE" "$ICON_PATH/$ICON_RESOURCE"
   
   # Append default application for extension
   echo "$MIME_TYPE/$MIME_TYPE_NAME=$DESKTOP_FILE" | \

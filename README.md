@@ -8,10 +8,11 @@ Currently, the repository contains a sample installation wizard. A future versio
 
 ## Using the installation wizard
 
-1. Generate the binary executable using your project's build chain. For this sample project, run the following command:
+1. Generate the binary executable using your project's build chain. For this sample project, run the following commands:
 
    ```bash
-   g++ sample-program.cpp
+   cd src
+   make
    ```
 
 2. Run the Installation Wizard, `installer_linux.sh`. A Windows installer has not yet been developed.
