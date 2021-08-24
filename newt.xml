@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
-	<mime-type type="application/custom-program-file-mime-type-1">
+	<mime-type type="text/custom-type-1">
 		<comment>Sample MIME Type 1</comment>
 		<glob pattern="*.myext1"/>
 	</mime-type>
-	<mime-type type="application/custom-program-file-mime-type-2">
+	<mime-type type="text/custom-type-2">
 		<comment>Sample MIME Type 2</comment>
 		<glob pattern="*.myext2"/>
 	</mime-type>

@@ -3,22 +3,33 @@
 # ToDo: Add flags (-g, -u, etc.) to enable skipping the interactive part
 
 
+# Define user-inputs
+UI_NAME="newt"
+UI_DISPLAY_NAME="N.E.W.T."
+UI_COMMENT="A test program for the wizard"
+UI_PATH_LINUX="./src/a.out"
+UI_PATH_WINDOWS=
+UI_ICON="./res/icon_executable.svg"
+UI_FILE_I_MIME_TYPE="text"
+UI_FILE_I_MIME_SUBTYPE="custom-type-1"
+UI_FILE_I_MIME_COMMENT="Sample MIME Type 1"
+UI_FILE_I_MIME_EXTENSION=".myext1"
+UI_FILE_I_MIME_ICON="./res/icon_file_1.svg"
+UI_FILE_II_MIME_TYPE="text"
+UI_FILE_II_MIME_SUBTYPE="custom-type-2"
+UI_FILE_II_MIME_COMMENT="Sample MIME Type 2"
+UI_FILE_II_MIME_EXTENSION=".myext2"
+UI_FILE_II_MIME_ICON="./res/icon_file_2.svg"
+
+
 # Name resources
-EXECUTABLE_FILE="a.out"
-DESKTOP_FILE="program.desktop"
-MIME_TYPE_FILE="sample-program-mime-type.xml"
-ICON_FILE_I="icon_file_1.svg"
-ICON_FILE_II="icon_file_2.svg"
-PROG_ICON_FILE="icon_executable.svg"
+DESKTOP_FILE="$UI_NAME.desktop"
+MIME_TYPE_FILE="$UI_NAME.xml"
 
 # Variables in other files ($DESKTOP_FILE)
 EXEC_PLACEHOLDER='<$EXECUTABLE>'
 ICON_PLACEHOLDER='<$ICON>'
 
-# Other configurable values (Must match $MIME_TYPE_FILE)
-MIME_TYPE="application"
-MIME_TYPE_NAME_I="custom-program-file-mime-type-1"
-MIME_TYPE_NAME_II="custom-program-file-mime-type-2"
 
 
 # Get installation mode from user
@@ -77,8 +88,8 @@ MIME_TYPE_PATH="$SHARE_DIR/mime/packages"
 ICON_PATH="$SHARE_DIR/icons/hicolor/scalable/mimetypes"
 PROG_ICON_PATH="$SHARE_DIR/icons/hicolor/scalable/apps"
 
-ICON_RESOURCE_I="$MIME_TYPE-$MIME_TYPE_NAME_I.svg"
-ICON_RESOURCE_II="$MIME_TYPE-$MIME_TYPE_NAME_II.svg"
+ICON_RESOURCE_I="$UI_FILE_I_MIME_TYPE-$UI_FILE_I_MIME_SUBTYPE.svg"
+ICON_RESOURCE_II="$UI_FILE_II_MIME_TYPE-$UI_FILE_II_MIME_SUBTYPE.svg"
 
 
 # Create directories as needed
@@ -97,35 +108,35 @@ fi
 
 # Edit files
 sed -i.backup \
-    -e "s/$EXEC_PLACEHOLDER/$EXECUTABLE_FILE/g" \
-    -e "s|$ICON_PLACEHOLDER|$PROG_ICON_PATH/$PROG_ICON_FILE|g" \
+    -e "s/$EXEC_PLACEHOLDER/$UI_NAME/g" \
+    -e "s|$ICON_PLACEHOLDER|$PROG_ICON_PATH/$UI_NAME-icon.svg|g" \
     "$DESKTOP_FILE"
 
 # Copy or remove files
 if [ $INSTALL_MODE -eq 1 ]; then
-  $DO cp "src/$EXECUTABLE_FILE" "$BIN_DIR"
-  $DO cp "res/$PROG_ICON_FILE" "$PROG_ICON_PATH"
+  $DO cp "$UI_PATH_LINUX" "$BIN_DIR/$UI_NAME"
+  $DO cp "$UI_ICON" "$PROG_ICON_PATH/$UI_NAME-icon.svg"
   $DO cp "$DESKTOP_FILE" "$DESKTOP_PATH"
   $DO cp "$MIME_TYPE_FILE" "$MIME_TYPE_PATH"
-  $DO cp "res/$ICON_FILE_I" "$ICON_PATH/$ICON_RESOURCE_I"
-  $DO cp "res/$ICON_FILE_II" "$ICON_PATH/$ICON_RESOURCE_II"
+  $DO cp "$UI_FILE_I_MIME_ICON" "$ICON_PATH/$ICON_RESOURCE_I"
+  $DO cp "$UI_FILE_II_MIME_ICON" "$ICON_PATH/$ICON_RESOURCE_II"
   
   # Append default application for extension
-  echo "$MIME_TYPE/$MIME_TYPE_NAME_I=$DESKTOP_FILE" | \
+  echo "$UI_FILE_I_MIME_TYPE/$UI_FILE_I_MIME_SUBTYPE=$DESKTOP_FILE" | \
 	$DO tee -a $DESKTOP_PATH/defaults.list > /dev/null
-  echo "$MIME_TYPE/$MIME_TYPE_NAME_II=$DESKTOP_FILE" | \
+  echo "$UI_FILE_II_MIME_TYPE/$UI_FILE_II_MIME_SUBTYPE=$DESKTOP_FILE" | \
 	$DO tee -a $DESKTOP_PATH/defaults.list > /dev/null
 else
-  $DO rm "$BIN_DIR/$EXECUTABLE_FILE"
-  $DO rm "$PROG_ICON_PATH/$PROG_ICON_FILE"
+  $DO rm "$BIN_DIR/$UI_NAME"
+  $DO rm "$PROG_ICON_PATH/$UI_NAME-icon.svg"
   $DO rm "$DESKTOP_PATH/$DESKTOP_FILE"
   $DO rm "$MIME_TYPE_PATH/$MIME_TYPE_FILE"
   $DO rm "$ICON_PATH/$ICON_RESOURCE_I"
   $DO rm "$ICON_PATH/$ICON_RESOURCE_II"
   
   # Remove default application for extension
-  $DO sed -i "\|^$MIME_TYPE/$MIME_TYPE_NAME_I=$DESKTOP_FILE|d" $DESKTOP_PATH/defaults.list
-  $DO sed -i "\|^$MIME_TYPE/$MIME_TYPE_NAME_II=$DESKTOP_FILE|d" $DESKTOP_PATH/defaults.list
+  $DO sed -i "\|^$UI_FILE_I_MIME_TYPE/$UI_FILE_I_MIME_SUBTYPE=$DESKTOP_FILE|d" $DESKTOP_PATH/defaults.list
+  $DO sed -i "\|^$UI_FILE_II_MIME_TYPE/$UI_FILE_II_MIME_SUBTYPE=$DESKTOP_FILE|d" $DESKTOP_PATH/defaults.list
 fi
 
 # Restore backups
