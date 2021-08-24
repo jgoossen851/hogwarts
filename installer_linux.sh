@@ -132,11 +132,15 @@ fi
 mv "$DESKTOP_FILE.backup" "$DESKTOP_FILE"
 
 # Update resources
-echo -n "Updating MIME database... "
+echo -n "Updating MIME database cache... "
 $DO update-mime-database "$SHARE_DIR/mime"
 echo "Done."
 
 echo -n "Updating icon cache... "
 $DO update-icon-caches "$SHARE_DIR"/icons/*
+echo "Done."
+
+echo -n "Updating desktop database cache... "
+$DO update-desktop-database "$SHARE_DIR/applications"
 echo "Done."
 
