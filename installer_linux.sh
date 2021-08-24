@@ -7,7 +7,8 @@
 EXECUTABLE_FILE="a.out"
 DESKTOP_FILE="program.desktop"
 MIME_TYPE_FILE="sample-program-mime-type.xml"
-ICON_FILE="icon_file_1.svg"
+ICON_FILE_I="icon_file_1.svg"
+ICON_FILE_II="icon_file_2.svg"
 PROG_ICON_FILE="icon_executable.svg"
 
 # Variables in other files ($DESKTOP_FILE)
@@ -16,8 +17,8 @@ ICON_PLACEHOLDER='<$ICON>'
 
 # Other configurable values (Must match $MIME_TYPE_FILE)
 MIME_TYPE="application"
-MIME_TYPE_NAME="custom-program-file-mime-type"
-
+MIME_TYPE_NAME_I="custom-program-file-mime-type-1"
+MIME_TYPE_NAME_II="custom-program-file-mime-type-2"
 
 
 # Get installation mode from user
@@ -76,7 +77,8 @@ MIME_TYPE_PATH="$SHARE_DIR/mime/packages"
 ICON_PATH="$SHARE_DIR/icons/hicolor/scalable/mimetypes"
 PROG_ICON_PATH="$SHARE_DIR/icons/hicolor/scalable/apps"
 
-ICON_RESOURCE="$MIME_TYPE-$MIME_TYPE_NAME.svg"
+ICON_RESOURCE_I="$MIME_TYPE-$MIME_TYPE_NAME_I.svg"
+ICON_RESOURCE_II="$MIME_TYPE-$MIME_TYPE_NAME_II.svg"
 
 
 # Create directories as needed
@@ -105,20 +107,25 @@ if [ $INSTALL_MODE -eq 1 ]; then
   $DO cp "res/$PROG_ICON_FILE" "$PROG_ICON_PATH"
   $DO cp "$DESKTOP_FILE" "$DESKTOP_PATH"
   $DO cp "$MIME_TYPE_FILE" "$MIME_TYPE_PATH"
-  $DO cp "res/$ICON_FILE" "$ICON_PATH/$ICON_RESOURCE"
+  $DO cp "res/$ICON_FILE_I" "$ICON_PATH/$ICON_RESOURCE_I"
+  $DO cp "res/$ICON_FILE_II" "$ICON_PATH/$ICON_RESOURCE_II"
   
   # Append default application for extension
-  echo "$MIME_TYPE/$MIME_TYPE_NAME=$DESKTOP_FILE" | \
+  echo "$MIME_TYPE/$MIME_TYPE_NAME_I=$DESKTOP_FILE" | \
+	$DO tee -a $DESKTOP_PATH/defaults.list > /dev/null
+  echo "$MIME_TYPE/$MIME_TYPE_NAME_II=$DESKTOP_FILE" | \
 	$DO tee -a $DESKTOP_PATH/defaults.list > /dev/null
 else
   $DO rm "$BIN_DIR/$EXECUTABLE_FILE"
   $DO rm "$PROG_ICON_PATH/$PROG_ICON_FILE"
   $DO rm "$DESKTOP_PATH/$DESKTOP_FILE"
   $DO rm "$MIME_TYPE_PATH/$MIME_TYPE_FILE"
-  $DO rm "$ICON_PATH/$ICON_RESOURCE"
+  $DO rm "$ICON_PATH/$ICON_RESOURCE_I"
+  $DO rm "$ICON_PATH/$ICON_RESOURCE_II"
   
   # Remove default application for extension
-  $DO sed -i "\|^$MIME_TYPE/$MIME_TYPE_NAME=$DESKTOP_FILE|d" $DESKTOP_PATH/defaults.list
+  $DO sed -i "\|^$MIME_TYPE/$MIME_TYPE_NAME_I=$DESKTOP_FILE|d" $DESKTOP_PATH/defaults.list
+  $DO sed -i "\|^$MIME_TYPE/$MIME_TYPE_NAME_II=$DESKTOP_FILE|d" $DESKTOP_PATH/defaults.list
 fi
 
 # Restore backups
