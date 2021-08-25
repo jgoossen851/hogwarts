@@ -9,5 +9,5 @@ Comment=A test program for the wizard
 Exec=<$EXECUTABLE> %f
 Icon=<$ICON>
 Terminal=true
-MimeType=text/custom-type-1;text/custom-type-2
+MimeType=application/custom-type-1;application/custom-type-2
 
