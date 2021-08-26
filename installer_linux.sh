@@ -26,9 +26,6 @@ UI_FILE_II_MIME_ICON="./res/icon_file_2.svg"
 DESKTOP_FILE="$UI_NAME.desktop"
 MIME_TYPE_FILE="$UI_NAME.xml"
 
-# Variables in other files ($DESKTOP_FILE)
-EXEC_PLACEHOLDER='<$EXECUTABLE>'
-ICON_PLACEHOLDER='<$ICON>'
 
 
 
@@ -106,41 +103,70 @@ if [ $INSTALL_MODE -eq 1 ]; then
   fi
 fi
 
-# Edit files
-sed -i.backup \
-    -e "s/$EXEC_PLACEHOLDER/$UI_NAME/g" \
-    -e "s|$ICON_PLACEHOLDER|$PROG_ICON_PATH/$UI_NAME-icon.svg|g" \
-    "$DESKTOP_FILE"
 
 # Copy or remove files
 if [ $INSTALL_MODE -eq 1 ]; then
+  # Install Executable
   $DO cp "$UI_PATH_LINUX" "$BIN_DIR/$UI_NAME"
+  
+  # Install Icons
   $DO cp "$UI_ICON" "$PROG_ICON_PATH/$UI_NAME-icon.svg"
-  $DO cp "$DESKTOP_FILE" "$DESKTOP_PATH"
-  $DO cp "$MIME_TYPE_FILE" "$MIME_TYPE_PATH"
   $DO cp "$UI_FILE_I_MIME_ICON" "$ICON_PATH/$ICON_RESOURCE_I"
   $DO cp "$UI_FILE_II_MIME_ICON" "$ICON_PATH/$ICON_RESOURCE_II"
+  
+  # Generate Desktop Entry File
+  echo -e "\
+[Desktop Entry]
+Type=Application
+Name=$UI_DISPLAY_NAME
+Comment=$UI_COMMENT
+Exec=$UI_NAME %f
+Icon=$PROG_ICON_PATH/$UI_NAME-icon.svg
+Terminal=true
+MimeType=$UI_FILE_I_MIME_TYPE/$UI_FILE_I_MIME_SUBTYPE;$UI_FILE_II_MIME_TYPE/$UI_FILE_II_MIME_SUBTYPE
+" | $DO tee -a "$DESKTOP_PATH/$DESKTOP_FILE" > /dev/null
+
+  # Generate MIME Type XML file
+  $DO echo -e "\
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+\t<mime-type type=\"$UI_FILE_I_MIME_TYPE/$UI_FILE_I_MIME_SUBTYPE\">
+\t\t<comment>$UI_FILE_I_MIME_COMMENT</comment>
+\t\t<glob pattern=\"*$UI_FILE_I_MIME_EXTENSION\"/>
+\t</mime-type>
+\t<mime-type type=\"$UI_FILE_II_MIME_TYPE/$UI_FILE_II_MIME_SUBTYPE\">
+\t\t<comment>$UI_FILE_II_MIME_COMMENT</comment>
+\t\t<glob pattern=\"*$UI_FILE_II_MIME_EXTENSION\"/>
+\t</mime-type>
+</mime-info>
+" | $DO tee -a "$MIME_TYPE_PATH/$MIME_TYPE_FILE" > /dev/null
   
   # Append default application for extension
   echo "$UI_FILE_I_MIME_TYPE/$UI_FILE_I_MIME_SUBTYPE=$DESKTOP_FILE" | \
 	$DO tee -a $DESKTOP_PATH/defaults.list > /dev/null
   echo "$UI_FILE_II_MIME_TYPE/$UI_FILE_II_MIME_SUBTYPE=$DESKTOP_FILE" | \
 	$DO tee -a $DESKTOP_PATH/defaults.list > /dev/null
+	
 else
+  # Remove Executable
   $DO rm "$BIN_DIR/$UI_NAME"
+  
+  # Remove Icons
   $DO rm "$PROG_ICON_PATH/$UI_NAME-icon.svg"
-  $DO rm "$DESKTOP_PATH/$DESKTOP_FILE"
-  $DO rm "$MIME_TYPE_PATH/$MIME_TYPE_FILE"
   $DO rm "$ICON_PATH/$ICON_RESOURCE_I"
   $DO rm "$ICON_PATH/$ICON_RESOURCE_II"
+  
+  # Remove Desktop Entry File
+  $DO rm "$DESKTOP_PATH/$DESKTOP_FILE"
+
+  # Remove MIME Type XML file
+  $DO rm "$MIME_TYPE_PATH/$MIME_TYPE_FILE"
   
   # Remove default application for extension
   $DO sed -i "\|^$UI_FILE_I_MIME_TYPE/$UI_FILE_I_MIME_SUBTYPE=$DESKTOP_FILE|d" $DESKTOP_PATH/defaults.list
   $DO sed -i "\|^$UI_FILE_II_MIME_TYPE/$UI_FILE_II_MIME_SUBTYPE=$DESKTOP_FILE|d" $DESKTOP_PATH/defaults.list
 fi
 
-# Restore backups
-mv "$DESKTOP_FILE.backup" "$DESKTOP_FILE"
 
 # Update resources
 echo -n "Updating MIME database cache... "
