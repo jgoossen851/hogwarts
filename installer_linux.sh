@@ -2,31 +2,34 @@
 
 # ToDo: Add flags (-g, -u, etc.) to enable skipping the interactive part
 
+# Ensure an argument was passed
+if [ ! $# -eq 1 ]; then
+  echo "Warning: $0 requires a single argument with the configuration filename." 1>&2
+  exit
+fi
 
-# Define user-inputs
-UI_NAME="newt"
-UI_DISPLAY_NAME="N.E.W.T."
-UI_COMMENT="A test program for the wizard"
-UI_PATH_LINUX="./src/a.out"
-UI_PATH_WINDOWS=
-UI_ICON="./res/icon_executable.svg"
-UI_FILE_I_MIME_TYPE="application"
-UI_FILE_I_MIME_SUBTYPE="custom-type-1"
-UI_FILE_I_MIME_COMMENT="Sample MIME Type 1"
-UI_FILE_I_MIME_EXTENSION=".myext1"
-UI_FILE_I_MIME_ICON="./res/icon_file_1.svg"
-UI_FILE_II_MIME_TYPE="application"
-UI_FILE_II_MIME_SUBTYPE="custom-type-2"
-UI_FILE_II_MIME_COMMENT="Sample MIME Type 2"
-UI_FILE_II_MIME_EXTENSION=".myext2"
-UI_FILE_II_MIME_ICON="./res/icon_file_2.svg"
+# Source the bash configuration
+if [ -f $1 ]; then
+  source $1
+else
+  echo "$1: No such file" 1>&2
+  exit
+fi
+
+# Perform the most basic (and inadequate) input sanitation
+# Check only the User Interface program name
+if [ -z $UI_NAME ]; then
+  echo "Program name is not set. Use a valid configuration file" 1>&2
+  exit
+fi
 
 
 # Name resources
 DESKTOP_FILE="$UI_NAME.desktop"
 MIME_TYPE_FILE="$UI_NAME.xml"
-
-
+PROGRAM_ICON_FILE="$UI_NAME-icon.svg"
+ICON_RESOURCE_I="$UI_FILE_I_MIME_TYPE-$UI_FILE_I_MIME_SUBTYPE.svg"
+ICON_RESOURCE_II="$UI_FILE_II_MIME_TYPE-$UI_FILE_II_MIME_SUBTYPE.svg"
 
 
 # Get installation mode from user
@@ -85,9 +88,6 @@ MIME_TYPE_PATH="$SHARE_DIR/mime/packages"
 ICON_PATH="$SHARE_DIR/icons/hicolor/scalable/mimetypes"
 PROG_ICON_PATH="$SHARE_DIR/icons/hicolor/scalable/apps"
 
-ICON_RESOURCE_I="$UI_FILE_I_MIME_TYPE-$UI_FILE_I_MIME_SUBTYPE.svg"
-ICON_RESOURCE_II="$UI_FILE_II_MIME_TYPE-$UI_FILE_II_MIME_SUBTYPE.svg"
-
 
 # Create directories as needed
 if [ $INSTALL_MODE -eq 1 ]; then
@@ -110,7 +110,7 @@ if [ $INSTALL_MODE -eq 1 ]; then
   $DO cp "$UI_PATH_LINUX" "$BIN_DIR/$UI_NAME"
   
   # Install Icons
-  $DO cp "$UI_ICON" "$PROG_ICON_PATH/$UI_NAME-icon.svg"
+  $DO cp "$UI_ICON" "$PROG_ICON_PATH/$PROGRAM_ICON_FILE"
   $DO cp "$UI_FILE_I_MIME_ICON" "$ICON_PATH/$ICON_RESOURCE_I"
   $DO cp "$UI_FILE_II_MIME_ICON" "$ICON_PATH/$ICON_RESOURCE_II"
   
@@ -121,7 +121,7 @@ Type=Application
 Name=$UI_DISPLAY_NAME
 Comment=$UI_COMMENT
 Exec=$UI_NAME %f
-Icon=$PROG_ICON_PATH/$UI_NAME-icon.svg
+Icon=$PROG_ICON_PATH/$PROGRAM_ICON_FILE
 Terminal=true
 MimeType=$UI_FILE_I_MIME_TYPE/$UI_FILE_I_MIME_SUBTYPE;$UI_FILE_II_MIME_TYPE/$UI_FILE_II_MIME_SUBTYPE
 " | $DO tee -a "$DESKTOP_PATH/$DESKTOP_FILE" > /dev/null
@@ -152,7 +152,7 @@ else
   $DO rm "$BIN_DIR/$UI_NAME"
   
   # Remove Icons
-  $DO rm "$PROG_ICON_PATH/$UI_NAME-icon.svg"
+  $DO rm "$PROG_ICON_PATH/$PROGRAM_ICON_FILE"
   $DO rm "$ICON_PATH/$ICON_RESOURCE_I"
   $DO rm "$ICON_PATH/$ICON_RESOURCE_II"
   
